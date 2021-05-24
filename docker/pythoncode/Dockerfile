@@ -14,7 +14,7 @@ RUN  mkdir  /mydocker
 COPY  oracle.py  /mydocker/oracle.py
 #  copy data from Docker client to Docker Engine 
 # under that image -- that is getting build
-CMD  ["python3","/mycode/hello.py"]
+CMD  ["python3","/mydocker/oracle.py"]
 # So this is for running code 
 # BUt only as parent process
 # CMD is going to decide default parent process for 
