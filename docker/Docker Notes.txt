@@ -1,0 +1,86 @@
+Docker :-
+
+	https://github.com/redashu/24thmay2021_oracle/tree/day1
+	
+====================================================================================================================================
+
+	1. Connecting remote docker engine :-
+	If we want to connect remote docker engine from ec2 instance which IP is below instead of local docker engine default uses local docker engine.
+	Create Context :- docker context create awsde --docker "host=tcp://52.21.252.231:2375"
+	Using Context :- docker context use awsde
+	Remove Context :- docker context rm awsde
+	Listing Context :- docker context ls
+	
+====================================================================================================================================
+
+	2. Install docker in linux :-
+	Installing Docker :- yum  install docker  -y
+	Configure docker engine to accept remote connection :-      
+	[root@ip-172-31-71-168 ~]# cd  /etc/sysconfig/
+    [root@ip-172-31-71-168 sysconfig]# ls
+	[root@ip-172-31-71-168 sysconfig]# vim docker
+    [root@ip-172-31-71-168 sysconfig]# cat  docker
+    # The max number of open files for the daemon itself, and all
+    # running containers.  The default value of 1048576 mirrors the value
+    # used by the systemd service unit.
+    DAEMON_MAXFILES=1048576
+	# Additional startup options for the Docker daemon, for example:
+    # OPTIONS="--ip-forward=true --iptables=true"
+    # By default we limit the number of open files per container
+    OPTIONS="--default-ulimit nofile=1024:4096 -H tcp://0.0.0.0:2375"
+	# How many seconds the sysvinit script waits for the pidfile to appear
+    # when starting the daemon.
+    DAEMON_PIDFILE_TIMEOUT=10
+	Start Docker Engine :- 
+	[root@ip-172-31-71-168 sysconfig]# systemctl start  docker 
+    [root@ip-172-31-71-168 sysconfig]# systemctl status  docker 
+	[root@ip-172-31-71-168 sysconfig]# systemctl enable  docker 
+	
+	The above changes will done by docker desktop automatically it will install linux machine and perform the above operation to install docker and make it work.
+	
+====================================================================================================================================
+	3. docker search java :- it will search from docker registry and list the images
+====================================================================================================================================
+	4. docker pull image name or docker pull image name : tag name (version)
+====================================================================================================================================
+	5. Container from images :- docker run --name rahul -d alpine : latest ping google.com
+	docker  run  --name rahul -it -d   alpine  ping 127.0.0.1 or docker  run  --name rahul -itd   alpine  ping 127.0.0.1
+	-d -> put container process in background (demon)
+	--name -> name of the container
+	ping google.com -> it is the parent process 
+	run -> always create a new container
+	-it -> where i is for interactive mode and t is for terminal to get shell access of container 
+====================================================================================================================================
+	6. List of running container :- docker ps
+====================================================================================================================================
+	7. List of all containers running or exited :- docker ps -a
+====================================================================================================================================
+	8. Stopping Container :- docker stop rahul (container name)
+	Alternative :- docker kill rahul ajith priya ( multiple container name)
+====================================================================================================================================
+	9. Check output of any container parent process :- docker logs rahul (container name)
+====================================================================================================================================
+	10. Start a exited container :- docker start rahul (container name)
+=====================================================================================================================================
+	11. Login into the container in interactive mode to change the configuration inside the container :-
+	docker exec -it rahul sh
+	ifconfig -> to check ip
+	uname & uname -r -> kernel 
+	ps -e
+=====================================================================================================================================
+	12. history :- it will give all docker commands which we have run history data
+=====================================================================================================================================
+	13. To remove the container forever :- stop the container first and do ( docker rm rahul)
+=====================================================================================================================================
+	14. To check all the process running inside a container :-
+	docker top rahul :- 
+=====================================================================================================================================
+	15. Creating docker image and running
+	https://github.com/rahulkumarsahu/docker-kubernetes/blob/208cb25aacd59a2c03790b30744e617528f26741/docker/pythoncode/Dockerfile
+	Building docker image from docker file :- docker build -t rahul:1.0.0 .
+	-t -> will give the tag repo name with version like alpine is docker image name
+	. -> it represent the current repository
+	Creating docker container from docker image :-
+	docker   run -itd --name or_rahul rahul:1.0.0
+	It will take cmd as docker parent process 
+    docker logs -f or_rahul -> to get the output in real time
