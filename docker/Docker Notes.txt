@@ -84,3 +84,25 @@ Docker :-
 	docker   run -itd --name or_rahul rahul:1.0.0
 	It will take cmd as docker parent process 
     docker logs -f or_rahul -> to get the output in real time
+		We cannot have multiple cmd commands in docker file because we can have only one parent process.
+=====================================================================================================================================
+	16. Docker will by default uses the docker hub repository to pull or push if we want to use OCR(Oracle Content Registry) then we should not do any changes 
+	In docker client like we are using here my desktop as a client and ec2 instance as a docker engine remotely so we have configure there our ocr ip and port
+	So that we can pull or push the images in our ocr.
+	{
+	  "registry-mirrors": [],
+	  "insecure-registries": ["ip : port"],
+	  "debug": false,
+	  "experimental": false,
+	  "features": {
+	    "buildkit": true
+	  },
+	  "builder": {
+	    "gc": {
+	      "enabled": true,
+	      "defaultKeepStorage": "20GB"
+	    }
+	  }
+	}
+	
+=====================================================================================================================================
