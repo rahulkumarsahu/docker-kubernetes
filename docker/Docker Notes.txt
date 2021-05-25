@@ -17,23 +17,23 @@ Docker :-
 	Installing Docker :- yum  install docker  -y
 	Configure docker engine to accept remote connection :-      
 	[root@ip-172-31-71-168 ~]# cd  /etc/sysconfig/
-    [root@ip-172-31-71-168 sysconfig]# ls
+[root@ip-172-31-71-168 sysconfig]# ls
 	[root@ip-172-31-71-168 sysconfig]# vim docker
-    [root@ip-172-31-71-168 sysconfig]# cat  docker
-    # The max number of open files for the daemon itself, and all
-    # running containers.  The default value of 1048576 mirrors the value
-    # used by the systemd service unit.
-    DAEMON_MAXFILES=1048576
+[root@ip-172-31-71-168 sysconfig]# cat  docker
+# The max number of open files for the daemon itself, and all
+# running containers.  The default value of 1048576 mirrors the value
+# used by the systemd service unit.
+DAEMON_MAXFILES=1048576
 	# Additional startup options for the Docker daemon, for example:
-    # OPTIONS="--ip-forward=true --iptables=true"
-    # By default we limit the number of open files per container
-    OPTIONS="--default-ulimit nofile=1024:4096 -H tcp://0.0.0.0:2375"
+# OPTIONS="--ip-forward=true --iptables=true"
+# By default we limit the number of open files per container
+OPTIONS="--default-ulimit nofile=1024:4096 -H tcp://0.0.0.0:2375"
 	# How many seconds the sysvinit script waits for the pidfile to appear
-    # when starting the daemon.
-    DAEMON_PIDFILE_TIMEOUT=10
+# when starting the daemon.
+DAEMON_PIDFILE_TIMEOUT=10
 	Start Docker Engine :- 
 	[root@ip-172-31-71-168 sysconfig]# systemctl start  docker 
-    [root@ip-172-31-71-168 sysconfig]# systemctl status  docker 
+[root@ip-172-31-71-168 sysconfig]# systemctl status  docker 
 	[root@ip-172-31-71-168 sysconfig]# systemctl enable  docker 
 	
 	The above changes will done by docker desktop automatically it will install linux machine and perform the above operation to install docker and make it work.
@@ -71,11 +71,14 @@ Docker :-
 	12. history :- it will give all docker commands which we have run history data
 =====================================================================================================================================
 	13. To remove the container forever :- stop the container first and do ( docker rm rahul)
+	Trick to remove containers and images (ALL)  :- 
+	docker  rm  $(docker ps -aq) 
+docker rmi $(docker images -q) -f
 =====================================================================================================================================
 	14. To check all the process running inside a container :-
 	docker top rahul :- 
 =====================================================================================================================================
-	15. Creating docker image and running
+	15. Creating docker image and running :- -f will be used if you want to use another file name for Dockerfile
 	https://github.com/rahulkumarsahu/docker-kubernetes/blob/208cb25aacd59a2c03790b30744e617528f26741/docker/pythoncode/Dockerfile
 	Building docker image from docker file :- docker build -t rahul:1.0.0 .
 	-t -> will give the tag repo name with version like alpine is docker image name
@@ -83,8 +86,8 @@ Docker :-
 	Creating docker container from docker image :-
 	docker   run -itd --name or_rahul rahul:1.0.0
 	It will take cmd as docker parent process 
-    docker logs -f or_rahul -> to get the output in real time
-		We cannot have multiple cmd commands in docker file because we can have only one parent process.
+	docker logs -f or_rahul -> to get the output in real time
+	We cannot have multiple cmd commands in docker file because we can have only one parent process.
 =====================================================================================================================================
 	16. Docker will by default uses the docker hub repository to pull or push if we want to use OCR(Oracle Content Registry) then we should not do any changes 
 	In docker client like we are using here my desktop as a client and ec2 instance as a docker engine remotely so we have configure there our ocr ip and port
@@ -104,5 +107,129 @@ Docker :-
 	    }
 	  }
 	}
+	
+=====================================================================================================================================
+	17. https://slashdevops.blogspot.com/
+=====================================================================================================================================
+	18. Checking image build history :- docker history ded43eeaa386
+=====================================================================================================================================
+	19. Running application in httpd server :- 
+	docker build -t rahul_httpd:1.0.0 .
+	docker run -itd --name httpd_rahul -p 1294:80 rahul_httpd:1.0.0
+	-p -> port forwarding 
+	Access By 52.21.252.231:1294 (ec2 ip : port) give firewall access to ec2 so that we can access publicly
+=====================================================================================================================================
+	20. How to transfer the images from one docker engine to another docker engine because different team is using different docker engine
+	
+=====================================================================================================================================
+	21. Pushing image to docker hub :- Same will be done for remote repository but how to configure remote repository in docker engine :- not needed
+	Tagging docker image :- docker tag rahul_httpd:1.0.0 rahulkumar07/rahul_httpd:1.0.0 (docker hub user name/ image name : version)
+	docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+	docker push NAME[:TAG] -> docker push rahulkumar07/rahul_httpd:1.0.0
+	docker tag 518a41981a6a myRegistry.com/image name
+docker push myRegistry.com/image name
+	Login Docker:- 
+	docker login -u rahulkumar07
+	docker logout
+=====================================================================================================================================
+	22. dumping internal information about docker images
+	docker   inspect  ashuhttpd:18thmay2021v1
+	docker   inspect  ashuhttpd:18thmay2021v1   --format='{{.Id}}'
+	docker   inspect  ashuhttpd:18thmay2021v1   --format='{{.RepoTags}}'
+	docker   inspect  ashuhttpd:18thmay2021v1   --format='{{.Cmd}}'
+	docker   inspect  ashuhttpd:18thmay2021v1   --format='{{.ContainerConfig.Cmd}}'
+=====================================================================================================================================
+	23. Docker Networking (how ip assigned and container will have unique ip  and we can restrict memory and resources) :-
+	 docker  run -itd  --name rahul1 --memory 100m   alpine ping google.com
+	Listing :- docker network ls
+	Info :- docker network inspect 11960b38a237
+	docker stats rahul1
+	docker  inspect   rahul1--format='{{.NetworkSettings.IPAddress}}' :- to check ip of container
+	docker exec -it rahul1 sh :- login to container to check ip
+	Ifconfig then ping 172.17.0.9
+=====================================================================================================================================
+	24. NAT () :- any container is allowed to reach outside internet when host is allowed to communicate and host ip is going outside not container ip
+	docker exec -it rahul1 sh
+	ping google.com
+	/ # ping google.com
+	PING google.com (142.250.81.206): 56 data bytes -> host ip is going out
+	
+	We can create our own bridge and on host you can change by default it will be docker0
+	Make container available in publicly :- port forwarding
+	Docker0 -> default bridge we should not use 
+=====================================================================================================================================
+	25. Creating docker network bridge 
+	docker  network  create  rahul1 --subnet=192.168.250.0/24 :- give under 255 like 250
+	
+=====================================================================================================================================
+	26. Creating container in my custom bridge
+	docker run -itd --name rahul2 --network rahul1  alpine ping google.com -> it will take dynamically Ip
+=====================================================================================================================================
+	27. Creating container with static ip 
+	docker run -itd --name rahul2 --network rahul1 --ip 192.168.250.20 alpine ping google.com -> it will take static ip (from point 25 )
+	Container can connect with same bridge ip network not different bridge
+	Connecting a bridge to a container :- docker network connect bridge1 bridge2
+	                                                                  docker network disconnect bridge1 bridge2
+=====================================================================================================================================
+	28. Isolation between containers we will create different bridges for the container
+	Why not to refer Docker0?
+	What is host , bridge, none? All 3 types of default bridge and above networking is related to docker engine 
+=====================================================================================================================================
+	29. Remove bridge and no use bridge remove :-
+	docker network rm bridge1
+	Docker network prune
+=====================================================================================================================================
+	30. Partitioner.io ->  this is web ui for docker
+            docker  run -itd --name webui -p 8000:8000  -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
+=====================================================================================================================================
+	31. Environment -> docker  run -it --rm  -e  x=500 -e z=hello  test:envv1  bash
+=====================================================================================================================================
+	32. Docker Storage :-
+	
+=====================================================================================================================================
+	33. Assignment :-
+	Q1.   create  two containers and do the given things  
+	Image must be alpine 
+Name of container <yourname>c1 & <yourname>c2
+Parent process you can choose accordingly 
+Create two files in container1 named aa.txt & bb.txt 
+Now copy aa.txt into second container
+Under you custom bridge complete above task
+	Solution :- 
+	❯ docker  network  create  ashubr1  --subnet=192.168.200.0/24
+3cc1ec68531002f63d74f1f12f566e8ee4e04cacd7b41581adf5a08434345e2d
+❯ docker run -itd --name ashuc11  --network ashubr1  alpine ping fb.com
+8f2f036b49bb8c9dc7bf773f6cd173f724047d8303ae0b05ab14e0e3a7c59b10
+❯ docker run -itd --name ashuc12  --network ashubr1  alpine ping fb.com
+a4b70bc3668eacecdf560a2b27afe3d27b09e7daff762b0fd07eb3ec04c031b5
+❯ docker  exec -it ashuc11 sh
+/ # pwd
+/
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # echo  hello  >aa.txt 
+/ # ls
+aa.txt  dev     home    media   opt     root    sbin    sys     usr
+bin     etc     lib     mnt     proc    run     srv     tmp     var
+/ # echo world  >bb.txt 
+/ # ls
+aa.txt  bin     etc     lib     mnt     proc    run     srv     tmp     var
+bb.txt  dev     home    media   opt     root    sbin    sys     usr
+/ # exit
+❯ docker  cp   ashuc11:/aa.txt  .
+❯ ls
+Applications          Documents             Movies                Public                awscli-bundle         k8susers
+Creative Cloud Files  Downloads             Music                 VirtualBox VMs        go                    macos-terminal-themes
+Desktop               Library               Pictures              aa.txt                javawebapp            powerlevel10k
+❯ cat  aa.txt
+hello
+❯ docker  cp aa.txt  ashuc12:/
+❯ docker  exec -it ashuc12 sh
+/ # ls
+aa.txt  dev     home    media   opt     root    sbin    sys     usr
+bin     etc     lib     mnt     proc    run     srv     tmp     var
+/ # cat aa.txt 
+hello
+/ # 
 	
 =====================================================================================================================================
