@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: rahulweb
+  name: rahulweb
+  namespace: rahulns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rahulweb
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rahulweb
+    spec:
+      containers:
+      - image: dockerashu/javawebapp:28thmay2021_v1
+        name: javawebapp
+        resources: {}
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ssvc1
+  name: ssvc1
+spec:
+  ports:
+  - name: 1294-8080
+    port: 1294
+    protocol: TCP
+    targetPort: 8080
+  selector: # Pod finder using below given labels 
+   app: rahulweb # exactly same label as POD have 
+  type: NodePort
+status:
+  loadBalancer: {}
