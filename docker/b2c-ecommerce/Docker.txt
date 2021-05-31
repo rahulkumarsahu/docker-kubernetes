@@ -12,4 +12,3 @@
 11 kubectl create deployment catalog --image=rahulkumar07/product-catalog:v1 --dry-run=client -o yaml
 12 kubectl create secret generic dbsecret --from-literal MYSQL_ROOT_PASSWORD=C!0uD@20  --from-literal MYSQL_PASSWORD=admin@21 --from-literal MYSQL_USER=admin -n rahul --> create db secret
 13 kubectl apply -f deployment.yaml --> to create a deployment
-14
