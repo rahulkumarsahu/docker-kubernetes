@@ -1,8 +1,15 @@
-1 docker pull mysql --> Pulling mysql image from docker hub and create network docker network create pc_network
-2 docker run -d -p 3308:3306 --name mysql-docker --network pc_network -e MYSQL_ROOT_PASSWORD=C!0uD@20 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin@21 -e MYSQL_DATABASE=b2c_ecommerce mysql --> runing the mysql container 
-3 docker exec -it docker-mysql /bin/bash --> going inside the mysql : mysql -uroot -p -A enter password and update mysql.user root % and flush priviliges
-4 docker container ls --> listing the docker container
-5 write the docker file for spring boot application
-6 docker build -t product-catalog:v1 --build-arg JAR_FILE_NAME=application-v1.jar --build-arg PORT=8090 . --> building the image
-7 docker run -p 8090:8090 --name pc_rahul --network=pc_network product-catalog:v1 --> Testing the image
-8 docker run -p 8090:8090 --name pc_rahul --link mysql-docker:mysql product-catalog:v1 --> without network follow this
+1  docker pull mysql --> Pulling mysql image from docker hub
+2  docker network create rahul --> create network
+2  docker run -d -p 3308:3306 --name mysql-docker --network rahul -e MYSQL_ROOT_PASSWORD=C!0uD@20 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin@21 -e MYSQL_DATABASE=b2c_ecommerce mysql --> running the mysql container
+3  docker exec -it docker-mysql /bin/bash --> going inside the mysql : mysql -u root -p -A enter password and mysql.user
+4  docker container ls --> listing the docker container
+5  write the docker file for spring boot application
+6  docker build -t product-catalog:v1 --build-arg JAR_FILE_NAME=application-v1.jar --build-arg PORT=8090 . --> building the image
+7  docker run -p 8090:8090 --name pc_rahul --network=rahul --env-file secret.txt product-catalog:v1 --> Running the image with network
+8  docker run -p 8090:8090 --name pc_rahul --link mysql-docker:mysql product-catalog:v1 --> without network then follow this
+9  docker tag product-catalog:v1 rahulkumar07/product-catalog:v1 --> tag the docker image
+10 docker push rahulkumar07/product-catalog:v1 --> push to public or private repo
+11 kubectl create deployment catalog --image=rahulkumar07/product-catalog:v1 --dry-run=client -o yaml
+12 kubectl create secret generic dbsecret --from-literal MYSQL_ROOT_PASSWORD=C!0uD@20  --from-literal MYSQL_PASSWORD=admin@21 --from-literal MYSQL_USER=admin -n rahul --> create db secret
+13 kubectl apply -f deployment.yaml --> to create a deployment
+14

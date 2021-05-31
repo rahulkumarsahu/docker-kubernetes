@@ -1,0 +1,71 @@
+# Create deployment for application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: catalog
+  name: catalog # name of deployment
+  namespace: rahul # namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  strategy: {}
+  template: # template for pod creation
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD
+        app: catalog
+    spec:
+      containers:
+        - image: rahulkumar07/product-catalog:v1 # docker image from Docker hub
+          name: product-catalog # container name
+          ports:
+            - containerPort: 80 # app  port
+          env:
+#            - name: MYSQL_HOST # to get dbHost info
+#              value: mysql-docker # service name of mysql POD
+#            - name: MYSQL_PORT # to get dbHost info
+#              value: "3306" # service name of mysql POD
+            - name: MYSQL_DATABASE # db name key
+              valueFrom:
+                configMapKeyRef:
+                  name: dbconfig                    # db name
+                  key: host
+            - name: MYSQL_USER
+              valueFrom: # reading user from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_USER # key of secret
+            - name: MYSQL_PASSWORD
+              valueFrom: # reading password from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_PASSWORD # key of secret
+          resources: {}
+status: {}
+---
+# creating service for app pod  either Node port / LB type
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: catalogservice
+  name: catalogservice
+  namespace: rahul
+spec:
+  ports:
+    - name: 1294-80
+      port: 1294
+      protocol: TCP
+      targetPort: 80
+  selector: # pod finder
+    app: catalog # label of POD
+  type: NodePort
+status:
+  loadBalancer: {}
