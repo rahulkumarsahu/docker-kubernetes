@@ -1,0 +1,7 @@
+com\microservice\user\entity\User.class
+com\microservice\user\repository\UserRepository.class
+com\microservice\user\controller\UserController.class
+com\microservice\user\service\UserService.class
+com\microservice\user\dto\Department.class
+com\microservice\user\dto\ResponseTemplate.class
+com\microservice\user\UserApplication.class
