@@ -1,6 +1,6 @@
 1  docker pull mysql --> Pulling mysql image from docker hub
 2  docker network create rahul --> create network
-3  docker run -d -p 3308:3306 --name mysql-docker --network rahul -e MYSQL_ROOT_PASSWORD=C!0uD@20 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin@21 -e MYSQL_DATABASE=b2c_ecommerce mysql --> running the mysql container
+3  docker run -d -p 3308:3306 --name mysql-docker --network rahul -e MYSQL_ROOT_PASSWORD=####### -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin@21 -e MYSQL_DATABASE=b2c_ecommerce mysql --> running the mysql container
 4  docker container ls --> listing the docker container
 5  write the docker file for spring boot application microservice
 6  mvn clean install -Dmaven.test.skip -> run this command in every service to create image file.
