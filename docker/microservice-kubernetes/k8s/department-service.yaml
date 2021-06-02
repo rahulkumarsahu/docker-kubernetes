@@ -1,0 +1,84 @@
+# Create deployment for application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: department-service
+  name: department-service # name of deployment
+  namespace: rahul # namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: department-service
+  strategy: {}
+  template: # template for pod creation
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD
+        app: department-service
+    spec:
+      containers:
+        - image: rahulkumar07/department:v1 # docker image from Docker hub
+          name: department-service # container name
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9001 # app  port
+          env:
+            #            - name: MYSQL_HOST # to get dbHost info
+            #              value: mysql-docker # service name of mysql POD
+            #            - name: MYSQL_PORT # to get dbHost info
+            #              value: "3306" # service name of mysql POD
+            - name: MYSQL_DATABASE # db name key
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config                    # db name
+                  key: host
+            - name: MYSQL_USER
+              valueFrom: # reading user from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_USER # key of secret
+            - name: MYSQL_PASSWORD
+              valueFrom: # reading password from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_PASSWORD # key of secret
+            - name: CLIENT_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: department_host_name
+            - name: CLIENT_EUREKA_SERVER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: client_eureka_server_address
+          resources: {}
+status: {}
+---
+# creating service for app pod  either Node port / LB type
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: department-service
+  name: department-service
+  namespace: rahul
+spec:
+  ports:
+    - name: 9001-80
+      port: 9001
+#      protocol: TCP
+      targetPort: 80
+  selector: # pod finder
+    app: department-service # label of POD
+#  type: ClusterIP
+  type: NodePort
+status:
+  loadBalancer: {}
+

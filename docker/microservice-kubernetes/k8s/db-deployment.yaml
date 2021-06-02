@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+#kind: StatefulSet
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql-service
+    tier: database
+  name: mysql-service # name of Deployment
+  namespace: rahul # namespace
+spec:
+#  serviceName: mysql-service
+  replicas: 1 # pod number
+  selector:
+    matchLabels:
+      app: mysql-service
+  strategy: {}
+  template: # template to create pod
+    metadata:
+      creationTimestamp: null
+      labels: # label of my pod
+        app: mysql-service
+    spec:
+      #      volumes: # to create volume
+      #        - name: rahuldbvolume # volume name
+      #          nfs: # source of volume storage is NFS
+      #            server: 172.31.66.13 # IP of NFS
+      #            path: /data/rahul # location on NFS server
+      volumes: # to create volume
+        - name: mysql-persistent-storage # volume name
+          persistentVolumeClaim:
+            claimName: service-pvc
+      containers:
+        - image: mysql:latest # docker image
+          name: mysql-service # name of container
+          ports:
+            - containerPort: 3306 # db port
+          #          volumeMounts: # mounting volume
+          #            - name: rahuldbvolume
+          #              mountPath: /var/lib/mysql/ # default mysql DB location
+          volumeMounts: # mounting volume
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql/ # default mysql DB location
+          env:
+            #            - name: MYSQL_DATABASE # db name key
+            #              value: b2c_ecommerce # db name
+            - name: MYSQL_DATABASE # db name key
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config                    # db name
+                  key: db_name
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom: # reading password from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_ROOT_PASSWORD # key of secret
+            - name: MYSQL_USER
+              valueFrom: # reading password from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_USER # key of secret
+            - name: MYSQL_PASSWORD
+              valueFrom: # reading password from Secret
+                secretKeyRef:
+                  name: dbsecret # name of secret
+                  key: MYSQL_PASSWORD # key of secret
+          resources: {}
+status: {}
+
+---
+# creating CLusterIP service for DB pod
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql-service
+    tier: database
+  name: mysql-service
+  namespace: rahul
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: mysql-service
+  type: ClusterIP
+#  clusterIP: None
+status:
+  loadBalancer: {}
