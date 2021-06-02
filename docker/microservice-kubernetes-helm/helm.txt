@@ -1,0 +1,6 @@
+helm create gateway
+helm create config-service
+helm create user-service
+helm create department-service
+helm create service-registry
+helm create hystrix-dashboard
