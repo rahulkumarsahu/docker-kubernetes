@@ -1,0 +1,69 @@
+# Create deployment for config-service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: config-service
+  name: config-service # name of deployment
+  namespace: rahul # namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-service
+  strategy: {}
+  template: # template for pod creation
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD
+        app: config-service
+    spec:
+      containers:
+        - image: rahulkumar07/config:v1 # docker image from Docker hub
+          name: config-service # container name
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9296
+          env:
+            - name: CONFIG_REPOSITORY
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: config_repository
+            - name: CLIENT_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: config_host_name
+            - name: CLIENT_EUREKA_SERVER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: client_eureka_server_address
+          resources: {}
+status: {}
+---
+# creating service for app pod  either Node port / LB type / ClusterIP for internal communication
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: config-service
+  name: config-service
+  namespace: rahul
+spec:
+  ports:
+    - name: 9296-80
+      port: 9296
+#      protocol: TCP
+      targetPort: 80
+  selector: # pod finder
+    app: config-service # label of POD
+#  type: ClusterIP
+  type: NodePort
+status:
+  loadBalancer: {}

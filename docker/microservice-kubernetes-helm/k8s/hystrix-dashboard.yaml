@@ -1,0 +1,63 @@
+# Create deployment for application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hystrix-service
+  name: hystrix-service # name of deployment
+  namespace: rahul # namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hystrix-service
+  strategy: {}
+  template: # template for pod creation
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD
+        app: hystrix-service
+    spec:
+      containers:
+        - image: rahulkumar07/hystrix:v1 # docker image from Docker hub
+          name: hystrix-service # container name
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9295 # app  port
+          env:
+            - name: CLIENT_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                    name: service-config
+                    key: hystrix_host_name
+            - name: CLIENT_EUREKA_SERVER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                    name: service-config
+                    key: client_eureka_server_address
+          resources: {}
+status: {}
+---
+# creating service for app pod  either Node port because every service need common ip to communicate with hystrix/ LB type
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hystrix-service
+  name: hystrix-service
+  namespace: rahul
+spec:
+  ports:
+    - name: 9295-80
+      port: 9295
+#      protocol: TCP
+      targetPort: 80
+  selector: # pod finder
+    app: hystrix-service # label of POD
+  type: NodePort
+status:
+  loadBalancer: {}
