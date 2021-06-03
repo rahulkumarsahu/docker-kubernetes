@@ -1,5 +1,0 @@
-com\microservice\department\entity\Department.class
-com\microservice\department\repository\DepartmentRepository.class
-com\microservice\department\service\DepartmentService.class
-com\microservice\department\DepartmentApplication.class
-com\microservice\department\controller\DepartmentController.class
