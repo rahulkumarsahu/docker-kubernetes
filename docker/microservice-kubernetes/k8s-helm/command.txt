@@ -1,1 +1,33 @@
 1.  helm create config-service --> to create helm chart similar for others
+
+helm template demochart -> verify yaml
+helm lint demochart -> validate indentation
+helm install releasename chartname
+helm list -a -> list all deployments
+helm delete release name
+helm install --dry-run --debug chartname
+helm upgrade releasename . -> . if you are inside of helm char directory
+helm rollback releasename revesion number . -> revision number get from helm list -a 
+
+
+change env from cli helm install --set replicaCount=2 --set replicaCount=3 helloworld-1(release name) world(chart name)
+
+helm install -f myvalues.yaml(custom) helloworldrelease helloworld 
+
+
+
+ values.yaml
+ 
+ securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- range .Values.examplemap }}         --Iteration begins over here
+            - name: {{ .name }}
+              value: {{ .value }}
+            {{- end }}                              --Iteration ends over here
