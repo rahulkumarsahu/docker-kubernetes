@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ namespace: rahulns
+ name: rahul-rc1
+spec: 
+ replicas: 1 # number of pod to deploy
+ template: # RC will use template to create PODs 
+  metadata:
+   labels: # label of POD 
+    run: rahul1
+  spec:
+   containers:
+   - image: dockerashu/httpd:25thmay2021v1
+     name: rahul1
+     ports:
+     - containerPort: 80
+
+#pasting service yaml here
+--- # seprator
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: rahulns # namespace info 
+  creationTimestamp: null
+  labels:
+    app: rahulsvc1
+  name: rahulsvc1  # name of service 
+spec:
+  ports:
+  - name: 1293-80
+    port: 1293 # port of service 
+    protocol: TCP 
+    targetPort: 80 # port of POD app 
+  selector: # Pod FInder  
+    run: rahul1 # label of Pod 
+  type: NodePort
+status:
+  loadBalancer: {}
+

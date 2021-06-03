@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: rahul-reader # name of role
+  namespace: rahul-friend # name of namespace
+rules:
+- apiGroups: # what are api versions v1, 1.0.0
+  - ""
+  resources: # what are the resources pod, node
+  - pods
+  verbs: # what are the action
+  - get
+  - list
+  - watch
