@@ -1,0 +1,12 @@
+{
+  "host": "mysql-service",
+  "db_name": "microservice",
+  "eureka_service_address": "http://eureka-0.eureka:8761/eureka",
+  "config_repository": "https://github.com/rahulkumarsahu/config-server-properties",
+  "gateway_host_name": "gateway-service",
+  "user_host_name": "user-service",
+  "department_host_name": "department-service",
+  "config_host_name": "config-service",
+  "hystrix_host_name": "hystrix-service",
+  "client_eureka_server_address": "http://eureka-0.eureka.rahul.svc.cluster.local:8761/eureka"
+}

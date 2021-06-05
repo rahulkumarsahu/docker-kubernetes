@@ -4,6 +4,26 @@ metadata:
   name: {{ include "service-registry.fullname" . }}
   labels:
     {{- include "service-registry.labels" . | nindent 4 }}
+  namespace: {{ .Values.application.namespace }}
+spec:
+  clusterIP: {{ .Values.service.clusterIP }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "service-registry.selectorLabels" . | nindent 4 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.eurekaService.name }}
+  namespace: {{ .Values.application.namespace }}
+  labels:
+    {{- include "service-registry.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

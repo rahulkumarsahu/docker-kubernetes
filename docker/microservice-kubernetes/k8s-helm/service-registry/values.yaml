@@ -4,24 +4,39 @@
 
 replicaCount: 1
 
+application:
+  namespace: rahul
+
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: rahulkumar07/registry
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "v1"
+
+# try to read from config.json
+
+#json:
+#  eureka_service_address: http://eureka-0.eureka:8761/eureka
+
+env:
+  name: eurekaserveraddress
+  configName: service-config
+  configKey: eureka_service_address
+#  configPath: eureka_service_address
+#  configKey: config.json
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "eureka"
+fullnameOverride: "eureka"
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: "default"
 
 podAnnotations: {}
 
@@ -37,8 +52,12 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
-  port: 80
+  clusterIP: None
+  type: LoadBalancer
+  port: 8761
+
+eurekaService:
+  name: eureka-lb
 
 ingress:
   enabled: false
@@ -62,17 +81,17 @@ resources: {}
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 100m
+#    memory: 128Mi
 
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 

@@ -1,10 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "service-registry.fullname" . }}
   labels:
     {{- include "service-registry.labels" . | nindent 4 }}
+  namespace: {{ .Values.application.namespace }}
 spec:
+  serviceName: {{ include "service-registry.fullname" . }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -15,7 +17,8 @@ spec:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+#        {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "service-registry.selectorLabels" . | nindent 8 }}
@@ -31,22 +34,38 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8761
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          env:
+            - name: {{ .Values.env.name }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configName }}
+                  key: {{ .Values.env.configKey }}
+#          volumeMounts:
+#            - name: {{ .Values.env.name }}
+#              mountPath: /config
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+#      volumes: #here config map we are taking as json file then we can mount as volumes
+#        - name: {{ .Values.env.name }}
+#          configMap:
+#            name: {{ .Values.env.configName }}
+#            items:
+#              - key: {{ .Values.env.configKey }}
+#                path: {{ .Values.env.configPath }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

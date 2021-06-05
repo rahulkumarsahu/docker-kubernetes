@@ -1,33 +1,37 @@
 1.  helm create config-service --> to create helm chart similar for others
-
-helm template demochart -> verify yaml
-helm lint demochart -> validate indentation
-helm install releasename chartname
-helm list -a -> list all deployments
-helm delete release name
-helm install --dry-run --debug chartname
-helm upgrade releasename . -> . if you are inside of helm char directory
-helm rollback releasename revesion number . -> revision number get from helm list -a 
-
-
-change env from cli helm install --set replicaCount=2 --set replicaCount=3 helloworld-1(release name) world(chart name)
-
-helm install -f myvalues.yaml(custom) helloworldrelease helloworld 
+2.  helm template service-registry --> to verify the charts yaml files
+3.  helm lint service-registry --> to validate the indentation
+4.  helm install --dry-run --debug service-registry --> to validate the helm chart before install
+5.  helm install eureka service-registry --> to do the deployment release name followed by chart name
+6.  helm list -a --> to list all the deployments
+7.  helm delete service-registry --> to delete the deployment
+8.  helm upgrade eureka . --> . if you are inside of helm chart directory to upgrade the deployment
+9.  helm rollback eureka revision number . --> revision number get from helm list -a
+10. helm install -f customValues.yaml releaseName chartName --> custom values.yaml
+11. helm install --set replicaCount=2 --set replicaCount=3 releaseName chartName --> change value from cli
 
 
+#data: # if wants to read data from values.yaml
+#  config.json: |-
+#    {
+#  {{- range $key, $val := .Values.json }}
+#  {{ $key | quote | indent 6}}: {{ $val | quote }}
+#  {{- end}}
+#}
+#json: # in values.yaml
+#  key1: value1
+# reference :- https://stackoverflow.com/questions/53429486/kubernetes-how-to-define-configmap-built-using-a-file-in-a-yaml
 
- values.yaml
- 
- securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            {{- range .Values.examplemap }}         --Iteration begins over here
-            - name: {{ .name }}
-              value: {{ .value }}
-            {{- end }}                              --Iteration ends over here
+your microservices are very similar you could write for loops, such as:
+
+{{- range $index, $service := .Values.my services}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-{{ $service.name }}
+# --- etc ---
+{{- end }}
+
+
+
+
