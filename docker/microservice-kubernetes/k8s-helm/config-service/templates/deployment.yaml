@@ -4,6 +4,7 @@ metadata:
   name: {{ include "config-service.fullname" . }}
   labels:
     {{- include "config-service.labels" . | nindent 4 }}
+  namespace: {{ .Values.application.namespace }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -31,20 +32,36 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 9296
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          env:
+            - name: {{ .Values.env.repoName }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configName }}
+                  key: {{ .Values.env.configRepoKey }}
+            - name: {{ .Values.env.hostName }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configName }}
+                  key: {{ .Values.env.configHostKey }}
+            - name: {{ .Values.env.serverName }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configName }}
+                  key: {{ .Values.env.configServerKey }}
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

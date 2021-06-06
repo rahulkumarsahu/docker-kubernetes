@@ -19,7 +19,7 @@ image:
 #  eureka_service_address: http://eureka-0.eureka:8761/eureka
 
 env:
-  name: eurekaserveraddress
+  name: EUREKA_SERVER_ADDRESS
   configName: service-config
   configKey: eureka_service_address
 #  configPath: eureka_service_address

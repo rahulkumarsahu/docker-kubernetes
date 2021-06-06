@@ -4,24 +4,36 @@
 
 replicaCount: 1
 
+application:
+  namespace: rahul
+
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: rahulkumar07/config
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "v1"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "config-service"
+fullnameOverride: "config-service"
+
+env:
+  configName:
+  repoName:
+  configRepoKey:
+  hostName:
+  configHostKey:
+  serverName:
+  configServerKey:
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: "default"
 
 podAnnotations: {}
 
@@ -37,8 +49,8 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
-  port: 80
+  type: NodePort
+  port: 9296
 
 ingress:
   enabled: false
@@ -72,7 +84,7 @@ resources: {}
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
