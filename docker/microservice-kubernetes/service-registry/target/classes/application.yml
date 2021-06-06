@@ -14,3 +14,5 @@ eureka:
     fetch-registry: false
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_ADDRESS}
+
+
