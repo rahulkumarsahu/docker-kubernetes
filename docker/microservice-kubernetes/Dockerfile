@@ -11,7 +11,10 @@ ARG JAR_FILE_NAME
 ARG PORT
 # from build command we will pass the value and it will get bind here.
 
+RUN  mkdir  /config
+
 VOLUME /tmp
+# to store configuration
 #it will create tmp folder to store tmp data and will get lost once container exit.
 
 RUN  mkdir  /myService
