@@ -1,0 +1,36 @@
+kubectl get po -n rahul
+kubectl get ns rahul --show-labels
+kubectl label namespace rahul istio-injection=enabled   --> to inject the sidecar envoy proxy in each new pods created
+kubectl apply -f kubernetes-manifests.yaml -n rahul
+istio -> samples -> addons
+kubectl port-forward svc/kiali -n istio-system 20001
+127.0.0.1:20001/kiali
+
+
+
+Istio has a great capability to check compatibility with the target cluster
+
+istioctl x precheck
+
+
+Istio Profiles
+https://istio.io/latest/docs/setup/additional-setup/config-profiles/
+
+istioctl profile list
+
+istioctl install --set profile=default
+
+kubectl -n istio-system get pods
+
+istioctl proxy-status
+
+
+You can manually inject istio sidecar to every deployment like this:
+
+kubectl get deploy playlists-api -o yaml | istioctl kube-inject -f - | kubectl apply -f -
+
+
+traffic will come to servicemesh dns in the cluster
+
+
+https://github.com/rahulkumarsahu/docker-development-youtube-series/tree/master/kubernetes/servicemesh/istio
